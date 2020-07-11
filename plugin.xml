@@ -10,6 +10,9 @@
     <engine name="cordova" version="&gt;=3.0.0"/>
   </engines>
 
+  <dependency id="cordova-plugin-enable-multidex" />
+  <dependency id="cordova-plugin-androidx" />
+  <dependency id="cordova-plugin-androidx-adapter" />
 
 
   <js-module src="www/cdv-plugin-card-io.js" name="CardIO">
