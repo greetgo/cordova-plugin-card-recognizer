@@ -1,0 +1,5 @@
+allprojects {
+    repositories {
+        if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
+    }
+}

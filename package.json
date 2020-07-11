@@ -1,0 +1,35 @@
+{
+  "name": "cordova-plugin-card-recognizer",
+  "version": "1.0.0",
+  "description": "This plugin allows to add card.io scanning capabilities to your application using card.io SDK Native library",
+  "cordova": {
+    "id": "cordova-plugin-card-recognizer",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/greetgo/cordova-plugin-card-recognizer"
+  },
+  "keywords": [
+    "card.io",
+    "sdk",
+    "card-scanning",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.0.0"
+    }
+  ],
+  "author": "Ateyev Zhassulan, Nazar Abu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/greetgo/cordova-plugin-card-recognizer/issues"
+  },
+  "homepage": "https://github.com/greetgo/cordova-plugin-card-recognizer/blob/master/README.md"
+}
