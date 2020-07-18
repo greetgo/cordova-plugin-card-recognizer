@@ -1,4 +1,5 @@
 
+import UIKit
 
 @objc(CardIOCordovaPlugin) class CardIOCordovaPlugin : CDVPlugin {
 
@@ -13,20 +14,29 @@
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = vc
         window?.makeKeyAndVisible()
-
+        
         vc.segmentSelectionAtIndex = {[weak self] (image, number, monthyear, name) in
-            
-            print("image:",image)
-            print("number:",number)
-            print("monthyear:",monthyear)
-            print("name:",name)
+                    
+            print("image:", image.count)
+            print("number:", number)
+            print("monthyear:", monthyear)
+            print("name:", name)
             
             self!.window = UIWindow(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             
-            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "The plugin succeeded");
+//            let dataMutable: NSMutableData = NSMutableData()
+//            dataMutable.append(image as Data)
+//            dataMutable.append(number.data(using: .utf8)!)
+//            dataMutable.append(monthyear.data(using: .utf8)!)
+//            dataMutable.append(name.data(using: .utf8)!)
+            
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAsArrayBuffer: image as Data);
             self!.commandDelegate!.send(pluginResult, callbackId: command.callbackId);
         }
-        
+        vc.backCallBack = {[weak self] in
+            self!.window = UIWindow(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+            let pluginResult = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "Back");
+            self!.commandDelegate!.send(pluginResult, callbackId: command.callbackId);
+        }
     }
-    
 }

@@ -135,3 +135,9 @@ extension UIImage {
         self.init(cgImage: cgImage, scale: image.scale, orientation: image.imageOrientation)
     }
 }
+
+extension Data {
+    func hex(separator:String = "") -> String {
+        return (self.map { String(format: "%02X", $0) }).joined(separator: separator)
+    }
+}
