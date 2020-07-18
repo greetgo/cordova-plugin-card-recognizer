@@ -124,7 +124,7 @@ extension CardIOScreenTestViewController: PayCardsRecognizerPlatformDelegate {
             }else {
                 self.firstImage = screenImage
             }
-            self.imageData = (UIImagePNGRepresentation(self.firstImage!)! as NSData)
+            self.imageData = (UIImageJPEGRepresentation(self.firstImage!, 1)! as NSData)
             
             recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: recognizerContainer, frameColor: .green)
             recognizer.startCamera()
