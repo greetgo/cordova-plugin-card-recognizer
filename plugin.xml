@@ -10,14 +10,31 @@
     <engine name="cordova" version="&gt;=3.0.0"/>
   </engines>
 
-  <dependency id="cordova-plugin-enable-multidex" />
-  <dependency id="cordova-plugin-androidx" />
-  <dependency id="cordova-plugin-androidx-adapter" />
+  <dependency id="cordova-plugin-enable-multidex"/>
+  <dependency id="cordova-plugin-androidx"/>
+  <dependency id="cordova-plugin-androidx-adapter"/>
 
 
   <js-module src="www/cdv-plugin-card-io.js" name="CardIO">
     <clobbers target="CardIO"/>
   </js-module>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*">
+      <feature name="CardIO">
+        <param name="ios-package" value="CardIOCordovaPlugin" onload="true"/>
+      </feature>
+    </config-file>
+    <pods-config ios-min-version="11.0" use-frameworks="true"/>
+    <pod id="SnapKit"/>
+    <pod id="PayCardsRecognizer"/>
+
+    <source-file src="src/ios/CardIOCordovaPlugin.swift"/>
+    <source-file src="src/ios/Helpers.swift"/>
+    <source-file src="src/ios/ScreenTestViewController.swift"/>
+
+    <dependency id="cordova-plugin-add-swift-support" version="^2.0.2"/>
+  </platform>
 
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
