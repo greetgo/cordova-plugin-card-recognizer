@@ -30,8 +30,8 @@
     <pod id="PayCardsRecognizer"/>
 
     <source-file src="src/ios/CardIOCordovaPlugin.swift"/>
-    <source-file src="src/ios/Helpers.swift"/>
-    <source-file src="src/ios/ScreenTestViewController.swift"/>
+    <source-file src="src/ios/CardIOHelpersCard.swift"/>
+    <source-file src="src/ios/CardIOScreenTestViewController.swift"/>
 
     <dependency id="cordova-plugin-add-swift-support" version="^2.0.2"/>
   </platform>

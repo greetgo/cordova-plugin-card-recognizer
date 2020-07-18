@@ -9,11 +9,11 @@
 import UIKit
 import PayCardsRecognizer
 
-class ScreenTestViewController: UIViewController {
+class CardIOScreenTestViewController: UIViewController {
 
     
     var firstImage: UIImage?
-    var segmentSelectionAtIndex: ((Data, String, String, String) -> ())?
+    var segmentSelectionAtIndex: ((UIImage, String, String, String) -> ())?
     
     
     // MARK: - Properties
@@ -44,7 +44,7 @@ class ScreenTestViewController: UIViewController {
 
 
 // MARK: - PayCards result delegate
-extension ScreenTestViewController: PayCardsRecognizerPlatformDelegate {
+extension CardIOScreenTestViewController: PayCardsRecognizerPlatformDelegate {
     func payCardsRecognizer(_ payCardsRecognizer: PayCardsRecognizer, didRecognize result: PayCardsRecognizerResult) {
         // Screen shot
         if result.recognizedNumber == nil && result.recognizedExpireDateMonth == nil && result.recognizedExpireDateYear == nil && result.recognizedHolderName == nil {
@@ -59,41 +59,23 @@ extension ScreenTestViewController: PayCardsRecognizerPlatformDelegate {
             }else if UIDevice.modelName == "iPhone 11" {
                 let imageCut: UIImage = screenImage.cropImage(toRect: CGRect(x: 45, y: 400, width: 735, height: 450))!
                 self.firstImage = imageCut
+            }else {
+                self.firstImage = screenImage
             }
-            
-//            recognizer.stopCamera()
-//            recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: recognizerContainer, frameColor: .green)
-//            recognizer.startCamera()
             recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: recognizerContainer, frameColor: .green)
             recognizer.startCamera()
         }
         // Get data
         else if result.recognizedNumber != nil && result.recognizedExpireDateMonth == nil && result.recognizedExpireDateYear == nil && result.recognizedHolderName == nil {
-            let vc = ScreenShowViewController(image: firstImage!,
-                                              number: result.recognizedNumber!,
-                                              month: "",
-                                              year: "",
-                                              name: "")
-            present(vc, animated: true)
+            segmentSelectionAtIndex?(firstImage!, result.recognizedNumber!, "", "")
+            recognizer.stopCamera()
         }else if result.recognizedNumber != nil && result.recognizedExpireDateMonth == nil && result.recognizedExpireDateYear == nil && result.recognizedHolderName != nil {
-            let vc = ScreenShowViewController(image: firstImage!,
-                                              number: result.recognizedNumber!,
-                                              month: "",
-                                              year: "",
-                                              name: result.recognizedHolderName!)
-            present(vc, animated: true)
+            segmentSelectionAtIndex?(firstImage!, result.recognizedNumber!, "", result.recognizedHolderName!)
+            recognizer.stopCamera()
         }else if result.recognizedNumber != nil && result.recognizedExpireDateMonth != nil && result.recognizedExpireDateYear != nil && result.recognizedHolderName != nil {
-            let vc = ScreenShowViewController(image: firstImage!,
-                                              number: result.recognizedNumber!,
-                                              month: result.recognizedExpireDateMonth!,
-                                              year: result.recognizedExpireDateYear!,
-                                              name: result.recognizedHolderName!)
-            present(vc, animated: true)
+            segmentSelectionAtIndex?(firstImage!, result.recognizedNumber!, "\(result.recognizedExpireDateMonth!)/\(result.recognizedExpireDateYear!)", result.recognizedHolderName!)
+            recognizer.stopCamera()
         }
-//        else {
-//            recognizer.stopCamera()
-//            recognizer.startCamera()
-//        }
     }
 }
 
