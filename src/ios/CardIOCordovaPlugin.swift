@@ -39,4 +39,9 @@ import UIKit
             self!.commandDelegate!.send(pluginResult, callbackId: command.callbackId);
         }
     }
+
+    @objc(closeApp:)
+    func closeApp(command: CDVInvokedUrlCommand) {
+         exit(-1)
+    }
 }
