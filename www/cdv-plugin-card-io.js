@@ -65,6 +65,10 @@ CardIO.prototype.version = function (callback) {
 };
 
 CardIO.prototype.closeApp = function (onSuccess, onFailure) {
+  onSuccess = onSuccess || function () {
+  };
+  onFailure = onFailure || function () {
+  };
   cordova.exec(onSuccess, onFailure, "CardIO", "closeApp", []);
 };
 
