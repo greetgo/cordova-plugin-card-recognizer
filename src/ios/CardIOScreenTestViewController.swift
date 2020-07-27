@@ -40,7 +40,7 @@ class CardIOScreenTestViewController: UIViewController {
     }()
     lazy var backButton: UIButton = {
         let btn = UIButton()
-        btn.setTitle("Ввести данные карты вручную", for: .normal)
+        btn.setTitle("Вернуться назад", for: .normal)
         btn.setTitleColor(.black, for: .normal)
         btn.backgroundColor = .white
         btn.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
