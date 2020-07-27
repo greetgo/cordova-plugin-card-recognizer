@@ -68,7 +68,7 @@ class CardIOScreenTestViewController: UIViewController {
     
     // MARK: - Functions
     func setupViews() -> Void {
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        view.backgroundColor = hexStringToUIColor(hex: "#1d3664")
         
         view.addSubview(recognizerContainer)
         recognizerContainer.snp.makeConstraints { (make) in
@@ -94,7 +94,7 @@ class CardIOScreenTestViewController: UIViewController {
         }
         view.addSubview(backButton)
         backButton.snp.makeConstraints { (make) in
-            make.bottom.equalToSuperview().offset(-10)
+            make.bottom.equalToSuperview().offset(0)
             make.width.equalToSuperview()
             make.height.equalTo(50)
         }
@@ -105,6 +105,27 @@ class CardIOScreenTestViewController: UIViewController {
             make.center.width.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.9)
         }
+    }
+    func hexStringToUIColor (hex:String) -> UIColor {
+            var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+            if (cString.hasPrefix("#")) {
+                cString.remove(at: cString.startIndex)
+            }
+
+            if ((cString.count) != 6) {
+                return UIColor.gray
+            }
+
+            var rgbValue:UInt64 = 0
+            Scanner(string: cString).scanHexInt64(&rgbValue)
+
+            return UIColor(
+                red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+                green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+                blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+                alpha: CGFloat(1.0)
+            )
     }
     func recognizerStart() -> Void {
         self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
@@ -167,12 +188,15 @@ class CardIOScreenTestViewController: UIViewController {
             let imageCut: UIImage = firstImage!.croppedInRect(rect: CGRect(x: 35, y: 340, width: UIScreen.main.bounds.width * 1.75, height: 340))
             self.firstImage = imageCut
         }else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "iPhone 7" || UIDevice.modelName == "iPhone 8" {
-            let imageCut: UIImage = firstImage!.croppedInRect(rect: CGRect(x: 42, y: 414, width: UIScreen.main.bounds.width * 1.75, height: 385))
+            let imageCut: UIImage = firstImage!.croppedInRect(rect: CGRect(x: 40, y: 420, width: UIScreen.main.bounds.width * 1.65, height: 470))
             self.firstImage = imageCut
         }else if UIDevice.modelName == "iPhone 11" {
             let imageCut = firstImage!.croppedInRect(rect: CGRect(x: 20, y: 560, width: UIScreen.main.bounds.width * 1.5, height: 250))
             self.firstImage = imageCut
-        }else {}
+        }else {
+            let imageCut = firstImage!.croppedInRect(rect: CGRect(x: 20, y: 560, width: UIScreen.main.bounds.width * 1.5, height: 250))
+            self.firstImage = imageCut
+        }
         
         let imageData = (self.firstImage!.jpegData(compressionQuality: 1.0)! as NSData)
         segmentSelectionAtIndex?(imageData, number!, "\(month!)/\(year!)", name!)
