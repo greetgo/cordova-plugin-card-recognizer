@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import PayCardsRecognizer
+import MBProgressHUD
 
 class CardIOScreenTestViewController: UIViewController {
     
@@ -59,9 +60,14 @@ class CardIOScreenTestViewController: UIViewController {
         super.viewDidLoad()
         
         setupViews()
+        let huder = MBProgressHUD.showAdded(to: self.view, animated: true)
+        huder.bezelView.color = hexStringToUIColor(hex: "#1d3664")
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
             self.recognizer.startCamera()
+            
+            huder.hide(animated: true)
         }
     }
     
