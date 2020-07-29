@@ -14,13 +14,13 @@ class CardIOScreenTestViewController: UIViewController {
     
     var segmentSelectionAtIndex: ((NSData, String, String, String) -> ())?
     var backCallBack: (() -> ())?
+    var shot: Bool = true
     
     var firstImage: UIImage?
     var number: String?
     var month: String?
     var year: String?
     var name: String?
-    
     
     lazy var alphaBlackTop: UIView = {
         let view = UIView()
@@ -42,6 +42,7 @@ class CardIOScreenTestViewController: UIViewController {
         let btn = UIButton()
         btn.setTitle("Вернуться назад", for: .normal)
         btn.setTitleColor(.black, for: .normal)
+        btn.titleLabel?.font = UIFont.boldSystemFont(ofSize: 15)
         btn.backgroundColor = .white
         btn.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         return btn
@@ -56,14 +57,13 @@ class CardIOScreenTestViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         setupViews()
-        recognizerPhotoStart()
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {
-            self.recognizerStart()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
+            self.recognizer.startCamera()
         }
     }
-    
     
     
     // MARK: - Functions
@@ -75,7 +75,7 @@ class CardIOScreenTestViewController: UIViewController {
             make.center.width.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.9)
         }
-        
+    
         view.addSubview(alphaBlackTop)
         alphaBlackTop.snp.makeConstraints { (make) in
             make.top.width.equalToSuperview()
@@ -96,125 +96,41 @@ class CardIOScreenTestViewController: UIViewController {
         backButton.snp.makeConstraints { (make) in
             make.bottom.equalToSuperview().offset(0)
             make.width.equalToSuperview()
-            make.height.equalTo(50)
-        }
-        
-        cameraView.isHidden = true
-        view.addSubview(cameraView)
-        cameraView.snp.makeConstraints { (make) in
-            make.center.width.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.9)
+            make.height.equalTo(70)
         }
     }
-    func hexStringToUIColor (hex:String) -> UIColor {
-            var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+    func hexStringToUIColor (hex: String) -> UIColor {
+        var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
 
-            if (cString.hasPrefix("#")) {
-                cString.remove(at: cString.startIndex)
-            }
-
-            if ((cString.count) != 6) {
-                return UIColor.gray
-            }
-
-            var rgbValue:UInt64 = 0
-            Scanner(string: cString).scanHexInt64(&rgbValue)
-
-            return UIColor(
-                red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-                green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-                blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-                alpha: CGFloat(1.0)
-            )
-    }
-    func recognizerStart() -> Void {
-        self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
-        self.recognizer.startCamera()
-    }
-    
-    
-    // MARK: - CustomCamera Functions
-    var captureSession: AVCaptureSession!
-    var cameraOutput: AVCapturePhotoOutput!
-    var previewLayer: AVCaptureVideoPreviewLayer!
-    var frontDevice: AVCaptureDevice?
-    var frontInput: AVCaptureInput?
-    
-    lazy var cameraView: UIView = {
-        let view = UIView()
-        return view
-    }()
-    
-    func recognizerPhotoStart() {
-        captureSession = AVCaptureSession()
-        captureSession.sessionPreset = AVCaptureSession.Preset.photo
-        cameraOutput = AVCapturePhotoOutput()
-
-        if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back), let input = try? AVCaptureDeviceInput(device: device) {
-            if (captureSession.canAddInput(input)) {
-                captureSession.addInput(input)
-                if (captureSession.canAddOutput(cameraOutput)) {
-                    captureSession.addOutput(cameraOutput)
-                    previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-                    previewLayer.frame = cameraView.bounds
-                    cameraView.layer.addSublayer(previewLayer)
-                    captureSession.startRunning()
-                }
-            } else { print("issue here : captureSesssion.canAddInput") }
-        } else { print("some problem here") }
-    }
-    func takePhoto() -> Void {
-        captureSession.startRunning()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let settings = AVCapturePhotoSettings()
-            let previewPixelType = settings.availablePreviewPhotoPixelFormatTypes.first!
-            let previewFormat = [ kCVPixelBufferPixelFormatTypeKey as String: previewPixelType,
-                                  kCVPixelBufferWidthKey as String: 160,
-                                  kCVPixelBufferHeightKey as String: 160 ]
-            settings.previewPhotoFormat = previewFormat
-            self.cameraOutput.capturePhoto(with: settings, delegate: self)
+        if (cString.hasPrefix("#")) {
+            cString.remove(at: cString.startIndex)
         }
+
+        if ((cString.count) != 6) {
+            return UIColor.gray
+        }
+
+        var rgbValue:UInt64 = 0
+        Scanner(string: cString).scanHexInt64(&rgbValue)
+
+        return UIColor(
+            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
+            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
+            alpha: CGFloat(1.0)
+        )
     }
-    
+
     
     // MARK: - Actions
     @objc func tapBack() -> Void {
-        captureSession.stopRunning()
         recognizer.stopCamera()
         backCallBack?()
     }
-    func imageCute() -> Void {
-        if UIDevice.modelName == "iPhone 5" || UIDevice.modelName == "iPhone 5c" || UIDevice.modelName == "iPhone 5s" || UIDevice.modelName == "iPhone SE" {
-            let imageCut: UIImage = firstImage!.croppedInRect(rect: CGRect(x: 35, y: 340, width: UIScreen.main.bounds.width * 1.75, height: 340))
-            self.firstImage = imageCut
-        }else if UIDevice.modelName == "iPhone 6" || UIDevice.modelName == "iPhone 6s" || UIDevice.modelName == "iPhone 7" || UIDevice.modelName == "iPhone 8" {
-            let imageCut: UIImage = firstImage!.croppedInRect(rect: CGRect(x: 40, y: 420, width: UIScreen.main.bounds.width * 1.65, height: 470))
-            self.firstImage = imageCut
-        }else if UIDevice.modelName == "iPhone 11" {
-            let imageCut = firstImage!.croppedInRect(rect: CGRect(x: 20, y: 560, width: UIScreen.main.bounds.width * 1.5, height: 250))
-            self.firstImage = imageCut
-        }else {
-            let imageCut = firstImage!.croppedInRect(rect: CGRect(x: 20, y: 560, width: UIScreen.main.bounds.width * 1.5, height: 250))
-            self.firstImage = imageCut
-        }
-        
+    func imageCut() -> Void {
+        recognizer.stopCamera()
         let imageData = (self.firstImage!.jpegData(compressionQuality: 1.0)! as NSData)
         segmentSelectionAtIndex?(imageData, number!, "\(month!)/\(year!)", name!)
-    }
-}
-
-
-// MARK: - AVCapturePhotoCaptureDelegate
-extension CardIOScreenTestViewController: AVCapturePhotoCaptureDelegate {
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error = error { print("error occured : \(error.localizedDescription)") }
-        if let dataImage = photo.fileDataRepresentation() {
-            let dataProvider = CGDataProvider(data: dataImage as CFData)
-            let cgImageRef: CGImage! = CGImage(jpegDataProviderSource: dataProvider!, decode: nil, shouldInterpolate: true, intent: .defaultIntent)
-            let image = UIImage(cgImage: cgImageRef, scale: 1.0, orientation: UIImage.Orientation.right)
-            self.firstImage = image
-            imageCute()
-        }else {print("some error here")}
     }
 }
 
@@ -226,8 +142,10 @@ extension CardIOScreenTestViewController: PayCardsRecognizerPlatformDelegate {
         result.recognizedExpireDateMonth == nil ? (month = "") : (month = result.recognizedExpireDateMonth)
         result.recognizedExpireDateYear == nil ? (year = "") : (year = result.recognizedExpireDateYear)
         result.recognizedHolderName == nil ? (name = "") : (name = result.recognizedHolderName)
-        
-        recognizer.stopCamera()
-        takePhoto()
+
+        if result.image != nil {
+            self.firstImage = result.image;
+            imageCut()
+        }
     }
 }
