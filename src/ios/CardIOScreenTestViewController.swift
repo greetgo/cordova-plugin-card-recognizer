@@ -135,7 +135,7 @@ class CardIOScreenTestViewController: UIViewController {
     }
     func imageCut() -> Void {
         recognizer.stopCamera()
-        let imageData = (self.firstImage!.jpegData(compressionQuality: 1.0)! as NSData)
+        let imageData = (self.firstImage!.jpegData(compressionQuality: 0.5)! as NSData)
         segmentSelectionAtIndex?(imageData, number!, "\(month!)/\(year!)", name!)
     }
 }
