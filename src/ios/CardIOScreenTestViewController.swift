@@ -23,16 +23,6 @@ class CardIOScreenTestViewController: UIViewController {
     var year: String?
     var name: String?
     
-    lazy var alphaBlackTop: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        return view
-    }()
-    lazy var alphaBlackBottom: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        return view
-    }()
     lazy var topLabel: UILabel = {
         let label = UILabel()
         label.text = "Поместите карту в кадр"
@@ -48,57 +38,85 @@ class CardIOScreenTestViewController: UIViewController {
         btn.addTarget(self, action: #selector(tapBack), for: .touchUpInside)
         return btn
     }()
-    
-    
+
+    //canvas
+    lazy var sampleMask: UIView = {
+        let sampleMask = UIView()
+        sampleMask.frame = view.frame
+        sampleMask.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        return sampleMask
+    }()
+    lazy var circleLayer: CAShapeLayer = {
+        let circleLayer = CAShapeLayer()
+        circleLayer.borderColor = UIColor.white.withAlphaComponent(1).cgColor
+        circleLayer.borderWidth = 1
+        circleLayer.frame = CGRect(x:0, y:0, width:sampleMask.frame.size.width, height:sampleMask.frame.size.height)
+        return circleLayer
+    }()
+    lazy var maskLayer: CALayer = {
+        let maskLayer = CALayer()
+        maskLayer.frame = sampleMask.bounds
+        maskLayer.addSublayer(circleLayer)
+        return maskLayer
+    }()
+
+
     // MARK: - Properties
     private var recognizer: PayCardsRecognizer!
     lazy var recognizerContainer = UIView()
-    
-    
+
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupViews()
         let huder = MBProgressHUD.showAdded(to: self.view, animated: true)
         huder.bezelView.color = hexStringToUIColor(hex: "#1d3664")
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
             self.recognizer.startCamera()
-            
+
             huder.hide(animated: true)
         }
     }
-    
-    
+
+
     // MARK: - Functions
     func setupViews() -> Void {
         view.backgroundColor = hexStringToUIColor(hex: "#1d3664")
-        
+
         view.addSubview(recognizerContainer)
         recognizerContainer.snp.makeConstraints { (make) in
             make.center.width.equalToSuperview()
             make.height.equalToSuperview().multipliedBy(0.9)
         }
-    
-        view.addSubview(alphaBlackTop)
-        alphaBlackTop.snp.makeConstraints { (make) in
-            make.top.width.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.33)
-        }
-        view.addSubview(alphaBlackBottom)
-        alphaBlackBottom.snp.makeConstraints { (make) in
-            make.width.bottom.equalToSuperview()
-            make.height.equalToSuperview().multipliedBy(0.33)
-        }
-        
-        view.addSubview(topLabel)
+
+        // Canvas
+        view.addSubview(sampleMask)
+        let finalPath =
+            UIBezierPath(roundedRect: CGRect(x:0, y:0, width:sampleMask.frame.size.width, height:sampleMask.frame.size.height), cornerRadius: 0)
+        let width = UIScreen.main.bounds.width
+        let height0 = ceil(UIScreen.main.bounds.width * 1 * 0.65)
+        let y0 = Int((UIScreen.main.bounds.height * 1) - height0) / 2
+
+        let circlePath = UIBezierPath(roundedRect: CGRect(x: Int(width * 0.025),
+                                                          y: y0+10,
+                                                          width: Int(width * 0.95),
+                                                          height: Int(height0-20)),
+                                      cornerRadius: 15)
+        finalPath.append(circlePath.reversing())
+        circleLayer.path = finalPath.cgPath
+        sampleMask.layer.mask = maskLayer
+
+        //just view
+        sampleMask.addSubview(topLabel)
+        sampleMask.addSubview(backButton)
         topLabel.snp.makeConstraints { (make) in
             make.top.equalToSuperview().offset(150)
             make.centerX.equalToSuperview()
         }
-        view.addSubview(backButton)
         backButton.snp.makeConstraints { (make) in
             make.bottom.equalToSuperview().offset(0)
             make.width.equalToSuperview()
