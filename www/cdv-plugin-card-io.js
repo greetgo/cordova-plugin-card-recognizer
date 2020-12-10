@@ -30,8 +30,9 @@ function CardIO() {
  * @parameter onFailure: a zero argument callback function that will be called if the user
  * cancels card scanning.
  */
-CardIO.prototype.scan = function (options, onSuccess, onFailure) {
-  cordova.exec(onSuccess, onFailure, "CardIO", "scan", [options]);
+CardIO.prototype.scan = function (options, onSuccess, onFailure, colorBackgroundIos) {
+  colorBackgroundIos = colorBackgroundIos || 'blue' // todo fake, нужно правильно реализовать
+  cordova.exec(onSuccess, onFailure, "CardIO", "scan", [options, colorBackgroundIos]);
 };
 
 /**
