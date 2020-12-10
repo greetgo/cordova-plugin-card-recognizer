@@ -16,7 +16,8 @@ class CardIOScreenTestViewController: UIViewController {
     var segmentSelectionAtIndex: ((NSData, String, String, String) -> ())?
     var backCallBack: (() -> ())?
     var shot: Bool = true
-    
+
+    var colorBackground: String? = "#1d3664"
     var firstImage: UIImage?
     var number: String?
     var month: String?
@@ -72,7 +73,7 @@ class CardIOScreenTestViewController: UIViewController {
 
         setupViews()
         let huder = MBProgressHUD.showAdded(to: self.view, animated: true)
-        huder.bezelView.color = hexStringToUIColor(hex: "#1d3664")
+        huder.bezelView.color = hexStringToUIColor(hex: self.colorBackground)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.recognizer = PayCardsRecognizer(delegate: self, resultMode: .async, container: self.recognizerContainer, frameColor: .green)
@@ -85,7 +86,7 @@ class CardIOScreenTestViewController: UIViewController {
 
     // MARK: - Functions
     func setupViews() -> Void {
-        view.backgroundColor = hexStringToUIColor(hex: "#1d3664")
+        view.backgroundColor = hexStringToUIColor(hex: self.colorBackground)
 
         view.addSubview(recognizerContainer)
         recognizerContainer.snp.makeConstraints { (make) in

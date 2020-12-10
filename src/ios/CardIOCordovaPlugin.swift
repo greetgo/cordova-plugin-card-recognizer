@@ -10,6 +10,11 @@ import UIKit
     @objc(scan:)
     func scan(command: CDVInvokedUrlCommand) {
         vc = CardIOScreenTestViewController()
+        if command.arguments[8] as! String == "white" {
+                vc.colorBackground = "#FFFFFF"
+                }else{
+                vc.colorBackground = "#1d3664"
+                }
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = vc
         window?.makeKeyAndVisible()
