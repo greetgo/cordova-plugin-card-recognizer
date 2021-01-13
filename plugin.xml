@@ -45,7 +45,7 @@
 
     <source-file src="src/android/CardIOCordovaPlugin.java" target-dir="src/io/card/cordova/sdk"/>
     <framework src="src/android/build.gradle" custom="true" type="gradleReference"/>
-    <framework src="kz.greetgo:paycardsrecognizer:1.1.1-SNAPSHOT"/>
+    <framework src="kz.greetgo:paycardsrecognizer:1.1.2-SNAPSHOT"/>
 
   </platform>
 
